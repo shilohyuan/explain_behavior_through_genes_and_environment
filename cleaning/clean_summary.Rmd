@@ -1,0 +1,45 @@
+---
+title: "Stay Point Summary (Table 1)"
+author: "Shiloh"
+date: "10/04/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+```{r,message=F, warning=F}
+library(knitr)
+library(kableExtra)
+library(readr)
+library(dplyr)
+setwd("/Users/zhou0767/Box/Shiloh_Geography_Spring2019/summary")
+rawSummary <- read_rds('stayPoint_cleaned_travelRemoved_summary.rds')
+options("scipen"=100, "digits"=2)
+rawSummary <- as.data.frame(rawSummary)
+rawSummary %>%
+  mutate(
+    Variables = Variables,
+    Devices = Devices, 
+    Min = Min,
+    firstQuartile = firstQuartile,
+    Median = Median,
+    Mean = Mean,
+    SD = SD,
+    thirdQuartile = thirdQuartile,
+    Max = Max
+  ) %>%
+  select(Variables, Devices, Min, firstQuartile, Median, Mean, SD, thirdQuartile, Max) %>%
+  kable(format = "html", escape = F, caption = "Stay Point - Cleaned Summary Statistics N = 561", align = 'c') %>%
+  kable_styling("striped",full_width = F) %>%
+  row_spec(which(rawSummary$firstQuartile <24 & rawSummary$firstQuartile > 23), bold = T, color = "white", background = "red") %>%
+  row_spec(which(rawSummary$firstQuartile <.08 & rawSummary$firstQuartile > .07), bold = T, color = "white", background = "red") %>%
+  collapse_rows(columns = 1, valign = "top") %>%
+  footnote(number = c('differences between iOS and Android are driven by the number of points available for android users.'))
+```
+

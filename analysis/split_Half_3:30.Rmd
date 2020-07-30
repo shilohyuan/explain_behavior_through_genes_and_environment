@@ -1,0 +1,86 @@
+---
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+# Split Half Reliability (WeekdayN = 556, WeekendN = 550)
+```{r, message =F, warning = F}
+setwd('/Users/zhou0767/Box/Shiloh_Geography_Spring2019/summary')
+library(gridExtra)
+library(ggplot2)
+library(grid)
+df <- readRDS('/Users/zhou0767/Box/Shiloh_Geography_Spring2019/growthModel/regression_withBFI_withtestage_remove5.rds')
+head(df)
+colnames(df)[11] <- "dailyMileage"
+splitHalfReliability <- function(weekdays){
+    appType <- c()
+    SVID <- c()
+    oddPlaces <- c()
+    evenPlaces <- c()
+    oddDistance <- c()
+    evenDistance <- c()
+    oddEntropy <- c()
+    evenEntropy <- c()
+    
+    oddRog <- c()
+    evenRog <- c()
+    list_IDs <- names(sort(table(df$SVID)))
+
+    for (i in 1:length(list_IDs)) {
+        individual <- df[which(df$SVID == list_IDs[i]),]
+                                      
+        if (length(individual$SVID) > 1){ 
+            individual1 <- individual[seq(1,length(individual$SVID),2),]
+            individual2 <- individual[seq(2,length(individual$SVID),2),]
+            SVID <- c(SVID, individual$SVID[1])
+            oddPlaces <- c(oddPlaces, mean(individual1$nbTrip, na.rm = T)) # number of places
+            evenPlaces <- c(evenPlaces, mean(individual2$nbTrip, na.rm =T))
+                                        # distance
+            oddDistance <- c(oddDistance, mean(individual1$dailyMileage, na.rm=T))
+            evenDistance <- c(evenDistance, mean(individual2$dailyMileage, na.rm=T))
+            oddEntropy <- c(oddEntropy, mean(individual1$entropy,na.rm=T))
+            evenEntropy <- c(evenEntropy, mean(individual2$entropy,na.rm=T))
+            
+            oddRog <-  c(oddRog, mean(individual1$rog,na.rm=T))
+            evenRog <- c(evenRog, mean(individual2$rog,na.rm=T))
+            appType <- c(appType, individual$appType[1])
+        }
+    }
+    splitHalf <- data.frame(ID = SVID, oddPlaces = oddPlaces, evenPlaces = evenPlaces, oddDistance=oddDistance, evenDistance=evenDistance, oddEntropy = oddEntropy, evenEntropy = evenEntropy, oddRog = oddRog, evenRog = evenRog, appType = appType)
+    return(splitHalf)
+}
+
+df_splitHalf <-  splitHalfReliability(df)
+df <- df_splitHalf
+head(df)
+
+grob1 = grobTree(textGrob(paste("Correlation: ", round(cor(df$oddPlaces, df$evenPlaces), 4)), x = 0, y = 0.77, hjust = 0, gp = gpar(col = "red", fontsize = 12, fontface = "bold")))
+
+grob3 = grobTree(textGrob(paste("Correlation : ", round(cor(df$oddDistance, df$evenDistance), 4))
+, x = 0.0, y = 0.77, hjust = 0, gp = gpar(col = "red", fontsize = 12, fontface = "bold")))
+
+grob5 = grobTree(textGrob(paste("Correlation : ", round(cor(df$oddEntropy, df$evenEntropy), 4))
+, x = 0.0, y = 0.77, hjust = 0, gp = gpar(col = "red", fontsize = 12, fontface = "bold")))
+
+grob7 = grobTree(textGrob(paste("Correlation : ", round(cor(df$oddRog, df$evenRog), 4))
+, x = 0.0, y = 0.77, hjust = 0, gp = gpar(col = "red", fontsize = 12, fontface = "bold")))
+
+g1 = ggplot(df, aes(x=oddPlaces, y=evenPlaces)) + geom_point(alpha = .4)  + geom_smooth(method=lm, se=FALSE) + annotation_custom(grob1) + theme(plot.title = element_text(hjust = 0.5)) + scale_y_continuous(name = "Even Number of Places", limits = c(0,8), breaks = seq(0, 8, 2)) + scale_x_continuous(name = "Odd Number of Places", limits = c(0,7), breaks = seq(0, 8, 2)) + theme(legend.title = element_blank())+ theme(legend.position = c(0.8, 0.1),
+          legend.direction = "horizontal", legend.key.size = unit(0.4,"cm"), legend.key.width = unit(0.2,"cm"))
+
+g3 = ggplot(df, aes(x=oddDistance, y=evenDistance)) + geom_point(alpha = .4)  + geom_smooth(method=lm, se=FALSE) + annotation_custom(grob3) + theme(plot.title = element_text(hjust = 0.5))  + scale_x_continuous(name = "odd  Distance (km)")  + theme(legend.position = "none") + scale_y_continuous(name = "even  Distance (km)")
+
+g5 = ggplot(df, aes(x=oddEntropy, y=evenEntropy)) + geom_point(alpha = .4)  + geom_smooth(method=lm, se=FALSE) + annotation_custom(grob5) + theme(plot.title = element_text(hjust = 0.5)) + scale_x_continuous(name = "odd Entropy")+ theme(legend.position = "none") + scale_y_continuous(name = "even Entropy")
+
+g7 = ggplot(df, aes(x=oddRog, y=evenRog)) + geom_point(alpha = .4)  + geom_smooth(method=lm, se=FALSE) + annotation_custom(grob7) + theme(plot.title = element_text(hjust = 0.5)) + scale_x_continuous(name = "odd Activity Space (km)")+ theme(legend.position = "none") + scale_y_continuous(name = "even Activity Space (km)")
+
+grid.arrange(g1,g3,g5,g7, ncol=2,nrow=2)
+#hist(df$evenRog)
+```
+

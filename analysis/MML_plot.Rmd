@@ -1,0 +1,159 @@
+---
+title: "MML_plot"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message = F, warning = F}
+# get_input_cor <- function(lmerOutcome, colnames) {
+#   # Get the random and fixed effects
+#   rand_effs <- ranef(lmerOutcome)
+#   fix_effs <- fixef(lmerOutcome)
+#   # Get the random effects estimates for each twin and combine them with the
+#   # fixed effects estimates to get the estimated parameters
+#   rand_effs_family <- rand_effs$FID %>% tibble::rownames_to_column("FID")
+#   rand_effs_twin <- rand_effs$`SVID:FID` %>%
+#     tibble::rownames_to_column("both") %>%
+#     separate(both, c("SVID", "FID"), ":")
+# 
+#   parameters <- left_join(rand_effs_twin, rand_effs_family, by = "FID") %>%
+#     transmute(
+#       user_id = SVID,
+#       intercept = `(Intercept).x` + `(Intercept).y` + fix_effs["(Intercept)"],
+#     )
+#   names(parameters)[2] <- paste(c(colnames),collapse="")
+#   return(parameters)
+# }
+# 
+# get_plot <- function(lmerOutcome, colnames) {
+#   #lmerOutcome <- nbTrip_lm1
+#   #colnames <- paste("nbTrip")
+#   # Get the random and fixed effects
+#   rand_effs <- ranef(lmerOutcome)
+#   fix_effs <- fixef(lmerOutcome)
+#   # Get the random effects estimates for each twin and combine them with the
+#   # fixed effects estimates to get the estimated parameters
+#   rand_effs_family <- rand_effs$FID %>% tibble::rownames_to_column("FID")
+#   rand_effs_twin <- rand_effs$`SVID:FID` %>%
+#     tibble::rownames_to_column("both") %>%
+#     separate(both, c("SVID", "FID"), ":")
+#   
+#   parameters <- left_join(rand_effs_twin, rand_effs_family, by = "FID") %>%
+#     transmute(
+#       user_id = SVID,
+#       intercept = `age_scale.x` + `age_scale.y` + fix_effs["age_scale"],
+#     )
+#   names(parameters)[2] <- paste(c(colnames),collapse="")
+#   return(parameters)
+# }
+# 
+# fix_effs_nbTrip <- fixef(nbTrip_lm1)
+# fix_effs_rog <- fixef(rog_lm1)
+# fix_effs_entropy <- fixef(entropy_lm1)
+# fix_effs_dailyKm <- fixef(dailyKm_lm1)
+# k <- rbind(fix_effs_nbTrip,fix_effs_rog,fix_effs_entropy,fix_effs_dailyKm)
+# saveRDS(k, "fixed_plot.rds")
+# plot_nbTrip <- get_plot(nbTrip_lm1, colnames = paste("nbTrip"))
+# plot_rog <- get_plot(rog_lm1, colnames = "rog")
+# plot_entropy <- get_plot(entropy_lm1, colnames = "entropy")
+# plot_distance <- get_plot(dailyKm_lm1, colnames = "dailyKm")
+# 
+# 
+# partial_nbTrip_all <- get_input_cor(nbTrip_lm1, colnames = paste("nbTrip"))
+# partial_rog_all <- get_input_cor(rog_lm1, colnames = "rog")
+# partial_entropy_all <- get_input_cor(entropy_lm1, colnames = "entropy")
+# partial_dailyKm_all <- get_input_cor(dailyKm_lm1, colnames = "dailyKm")
+# head(partial_nbTrip_all)
+# # 14.21 is the youngests age
+# # For loop to generate age (x1 and x2)
+# allID <- names(sort(table(data$SVID)))
+# x1_diff <- rep(NA,length(allID))
+# x2_diff <- rep(NA,length(allID))
+# 
+# for (i in 1:length(allID)){
+#   individual <- data[which(data$SVID == allID[i]),]
+#   first <- head(individual,1)
+#   last <- tail(individual,1)
+#   x1_diff[i] <- first$age_scale
+#   x2_diff[i] <- last$age_scale
+# }
+# 
+# x1 <- x1_diff + 14.21
+# x2 <- x2_diff + 14.21
+# age <- data.frame(ID = allID, x1=x1,x2=x2,x1_diff=x1_diff,x2_diff =x2_diff)
+# age$nbTrip_slope <- plot_nbTrip$nbTrip[match(age$ID, plot_nbTrip$user_id)]
+# age$nbTrip_int <- partial_nbTrip_all$nbTrip[match(age$ID, partial_nbTrip_all$user_id)]
+# age$rog_slope <- plot_rog$rog[match(age$ID, plot_rog$user_id)]
+# age$rog_int <- partial_rog_all$rog[match(age$ID, partial_rog_all$user_id)]
+# age$entropy_slope <- plot_entropy$entropy[match(age$ID, plot_entropy$user_id)]
+# age$entropy_int <- partial_entropy_all$entropy[match(age$ID, partial_entropy_all$user_id)]
+# age$dailyKm_slope <- plot_distance$dailyKm[match(age$ID, plot_distance$user_id)]
+# age$dailyKm_int <- partial_dailyKm_all$dailyKm[match(age$ID, partial_dailyKm_all$user_id)]
+# head(age)
+# # A function that use x1, x2, intercept, and slope to calculate y1 and y2
+# age$y1_nbTrip <- age$x1_diff*age$nbTrip_slop + age$nbTrip_int
+# age$y2_nbTrip <- age$x2_diff*age$nbTrip_slop + age$nbTrip_int
+# 
+# age$y1_rog <- age$x1_diff*age$rog_slop + age$rog_int
+# age$y2_rog <- age$x2_diff*age$rog_slop + age$rog_int
+# 
+# age$y1_entropy <- age$x1_diff*age$entropy_slop + age$entropy_int
+# age$y2_entropy <- age$x2_diff*age$entropy_slop + age$entropy_int
+# 
+# age$y1_dailyKm <- age$x1_diff*age$dailyKm_slop + age$dailyKm_int
+# age$y2_dailyKm <- age$x2_diff*age$dailyKm_slop + age$dailyKm_int
+# 
+# saveRDS(age, 'MML_plot.rds')
+```
+
+
+```{r, message =F, warning = F}
+setwd('/Users/zhou0767/Box/Shiloh_Geography_Spring2019/growthModel')
+
+library(gridExtra)
+library(ggplot2)
+library(grid)
+df <- readRDS('MML_plot.rds')
+fix <- readRDS('fixed_plot.rds')
+c <- c(1,2,3,14:21)
+data <- df[,c]
+
+
+library(gridExtra)
+library(ggplot2)
+library(grid)
+
+#https://ggplot2.tidyverse.org/reference/geom_segment.html
+
+plot_growth <- function(df, input = ""){
+  index_fix <- grep(input,rownames(fix))
+  grob1 = grobTree(textGrob(paste("Slope: ", round(fix[index_fix,2], 2)), x = 0, y = 0.77, hjust = 0, gp = gpar(col = "red", fontsize = 13, fontface = "bold")))
+  
+  index <- grep(input,colnames(df))
+  df1 <- data.frame(x1 = c(df$x1,df$x2), y1 = c(df[,index[1]],df[,index[2]]))
+  df2 <- data.frame(x1 = df$x1, x2 = df$x2, y1 = df[,index[1]], y2 = df[,index[2]])
+  m <- ggplot(df1, aes(x1,y1)) 
+  for (i in 1:length(df$x1)){ 
+    #print(i)
+    k <- m + geom_segment(aes(x = x1, y = y1, xend=x2, yend=y2), data=df2[i,],color = "grey")
+    m <- k
+  }
+
+  m <- m+ geom_abline(slope= fix[index_fix,2], intercept = fix[index_fix,1]) + xlab("Age (years)") + annotation_custom(grob1) 
+  return(m)
+}
+
+p1 <- plot_growth(df,"nbTrip") + ylab("Number of Places")
+p2 <- plot_growth(df,"dailyKm") + ylab("Distance Travelled (km)")
+p3 <- plot_growth(df,"rog") +  ylab("Activity Space (km)")
+p4 <- plot_growth(df,"entropy") +  ylab("Entropy")
+
+grid.arrange(p1,p2,p3,p4,nrow=2,ncol=2)
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
