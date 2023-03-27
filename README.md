@@ -1,7 +1,7 @@
 # Modeling Personality and Daily Spatial Behavior: A Longitudinal Study in Adolescent Twin
 full presentation is in `personality_and_movement.pdf`  
 
-### Key Question to answer 
+### Research Questions
 Is our movement routine across time and space impacted by gene or environment?  
 Of course - our movement has been heavily constrained during pandemic, and I can predict this perfectly :)  
 
