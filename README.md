@@ -1,14 +1,17 @@
 # Modeling Personality and Daily Spatial Behavior: A Longitudinal Study in Adolescent Twin
 full presentation is in `personality_and_movement.pdf`  
 
-Key Question to answer: Is our movement routine across time and space impacted by gene or environment?  
+### Key Question to answer 
+Is our movement routine across time and space impacted by gene or environment?  
 Of course - our movement has been heavily constrained during pandemic, and I can predict this perfectly :)  
+
+### Data Processing
 We leveraged four daily spatial behavior to quantify a movement pattern which are:
 1. number of places visited
 2. distance traveled
 3. activity space
 4. entropy (or predictability)
-
+### Results and Conclusion
 We found that:
 1. Spatial Behavioral is stable over time (2-4 years)
 2. Personality correlates with daily spatial behavior
